@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": false,
   "description": "UD Singularity BigBang engine for the Universal Dragon expandable AI universe.",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -11,7 +12,6 @@
   },
   "dependencies": {
     "@monaco-editor/react": "latest",
-    "@groq/sdk": "latest",
     "vite": "latest",
     "react": "latest",
     "react-dom": "latest",
