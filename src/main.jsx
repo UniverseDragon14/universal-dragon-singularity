@@ -173,6 +173,42 @@ ${html}
     setStatus('Saved locally. Database hook reserved for later.');
   };
 
+  const exportProject = () => {
+    const safeTitle = (title || 'ud-singularity')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '') || 'ud-singularity';
+
+    const file = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${title}</title>
+  <style>
+${css}
+  </style>
+</head>
+<body>
+${html}
+  <script>
+${js}
+  <\/script>
+</body>
+</html>`;
+
+    const blob = new Blob([file], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${safeTitle}.html`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    setStatus('Exported standalone HTML file.');
+  };
+
   const applyTemplate = (templateKey) => {
     const template = templates[templateKey];
     setHtml(template.html);
@@ -252,6 +288,7 @@ ${html}
         <div className="topActions">
           <button onClick={() => setSettingsOpen(true)}>Settings</button>
           <button onClick={saveProject}>Save</button>
+          <button onClick={exportProject}>Export</button>
           <button className="hot" onClick={architect}>EVE Architect</button>
         </div>
       </header>
