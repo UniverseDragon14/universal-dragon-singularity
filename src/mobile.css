@@ -1,0 +1,78 @@
+.panelNav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: none;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(5, 3, 3, 0.92);
+  backdrop-filter: blur(10px);
+}
+
+.panelNav button {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 10px 7px;
+  background: rgba(255, 90, 0, 0.08);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.panelNav button.active {
+  background: linear-gradient(90deg, var(--fire), var(--gold));
+  color: #180700;
+  border-color: transparent;
+}
+
+@media (max-width: 620px) {
+  .appShell {
+    width: min(100% - 12px, 1600px);
+    padding-bottom: 18px;
+  }
+
+  .panelNav {
+    display: grid;
+  }
+
+  .studioGrid,
+  .mainStudio {
+    display: block;
+  }
+
+  .studioPane {
+    display: none;
+  }
+
+  .studioPane.active {
+    display: block;
+    animation: paneIn 0.18s ease-out;
+  }
+
+  .sidePanel,
+  .editorPanel,
+  .previewPanel,
+  .aiPanel {
+    min-height: calc(100vh - 260px);
+    margin-top: 14px;
+  }
+
+  iframe {
+    height: 48vh;
+  }
+
+  .previewConsole,
+  .aiReply {
+    max-height: 28vh;
+  }
+}
+
+@keyframes paneIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
