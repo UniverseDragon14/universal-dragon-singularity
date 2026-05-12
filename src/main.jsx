@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import Editor from '@monaco-editor/react';
 import './styles.css';
+import './mobile.css';
 
 const templates = {
   singularity: {
