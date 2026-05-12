@@ -4,13 +4,13 @@ import Editor from '@monaco-editor/react';
 import './styles.css';
 
 const templates = {
-  bigbang: {
-    name: 'BigBang Starter',
+  singularity: {
+    name: 'Singularity Starter',
     html: `<section class="world-card">
-  <p class="tag">BIGBANG v0.1</p>
+  <p class="tag">SINGULARITY v0.1</p>
   <h1>UD Singularity</h1>
   <p>One point expanding into the Universal Dragon AI universe.</p>
-  <button onclick="ignite()">Ignite BigBang</button>
+  <button onclick="ignite()">Ignite Singularity</button>
   <div id="signal">Awaiting spark...</div>
 </section>`,
     css: `body {
@@ -55,8 +55,8 @@ button {
 }`,
     js: `function ignite() {
   const signal = document.getElementById('signal');
-  signal.textContent = 'BigBang started: module slots ready.';
-  console.log('UD Singularity BigBang ignited');
+  signal.textContent = 'Singularity ignition complete: module slots ready.';
+  console.log('UD Singularity core ignited');
 }
 
 window.UD_MODULES = {
@@ -116,18 +116,20 @@ function readSaved(key, fallback) {
 }
 
 function App() {
-  const [title, setTitle] = useState(() => readSaved('ud_title', 'UD Singularity BigBang'));
+  const [title, setTitle] = useState(() => readSaved('ud_title', 'UD Singularity'));
   const [description, setDescription] = useState(() => readSaved('ud_description', 'Expandable AI universe seed for Universal Dragon by Aslam.'));
   const [tags, setTags] = useState(() => readSaved('ud_tags', 'Universal Dragon, Aslam, EVE, NOVA, UDOS'));
   const [visibility, setVisibility] = useState(() => readSaved('ud_visibility', 'public'));
-  const [html, setHtml] = useState(() => readSaved('ud_html', templates.bigbang.html));
-  const [css, setCss] = useState(() => readSaved('ud_css', templates.bigbang.css));
-  const [js, setJs] = useState(() => readSaved('ud_js', templates.bigbang.js));
+  const [html, setHtml] = useState(() => readSaved('ud_html', templates.singularity.html));
+  const [css, setCss] = useState(() => readSaved('ud_css', templates.singularity.css));
+  const [js, setJs] = useState(() => readSaved('ud_js', templates.singularity.js));
   const [active, setActive] = useState('html');
-  const [status, setStatus] = useState('BigBang seed ready.');
+  const [status, setStatus] = useState('Singularity core ready.');
   const [consoleLines, setConsoleLines] = useState(['Preview console ready.']);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [sideOpen, setSideOpen] = useState(true);
+  const [aiQuestion, setAiQuestion] = useState('');
+  const [aiReply, setAiReply] = useState('');
 
   useEffect(() => {
     const handler = (event) => {
@@ -183,17 +185,52 @@ ${html}
   const architect = async () => {
     setStatus('EVE Architect private bridge checking...');
     try {
-      const response = await fetch('http://localhost:8787/api/architect', {
+      const response = await fetch(`http://${window.location.hostname}:8787/api/architect`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ html, css, js, question: 'Review this project and suggest the next Universal Dragon module improvement.' }),
+        body: JSON.stringify({
+          html,
+          css,
+          js,
+          question: aiQuestion || 'Review this project and suggest the next Universal Dragon module improvement.',
+        }),
       });
       const data = await response.json();
-      setConsoleLines((lines) => [...lines.slice(-6), `EVE: ${data.reply || data.error || 'No reply.'}`]);
+      const reply = data.reply || data.error || 'No reply.';
+      setAiReply(reply);
+      setConsoleLines((lines) => [...lines.slice(-6), `EVE: ${reply.slice(0, 700)}`]);
       setStatus('EVE Architect replied.');
     } catch {
       setStatus('EVE Architect backend not running yet. Frontend is safe and working.');
     }
+  };
+
+  const extractCodeBlock = (reply, lang) => {
+    const aliases = lang === 'js' ? ['js', 'javascript'] : [lang];
+    for (const name of aliases) {
+      const pattern = new RegExp('```' + name + '\\n([\\s\\S]*?)```', 'i');
+      const match = reply.match(pattern);
+      if (match) return match[1].trim();
+    }
+    return '';
+  };
+
+  const applyAiCode = () => {
+    const nextHtml = extractCodeBlock(aiReply, 'html');
+    const nextCss = extractCodeBlock(aiReply, 'css');
+    const nextJs = extractCodeBlock(aiReply, 'js');
+
+    if (!nextHtml && !nextCss && !nextJs) {
+      setStatus('No HTML/CSS/JS code blocks found in EVE reply.');
+      return;
+    }
+
+    if (nextHtml) setHtml(nextHtml);
+    if (nextCss) setCss(nextCss);
+    if (nextJs) setJs(nextJs);
+
+    setConsoleLines((lines) => [...lines.slice(-6), 'EVE code applied safely to editor.']);
+    setStatus('EVE generated code applied.');
   };
 
   const currentValue = active === 'html' ? html : active === 'css' ? css : js;
@@ -208,7 +245,7 @@ ${html}
       <header className="studioTopbar">
         <button className="iconButton" onClick={() => setSideOpen(!sideOpen)}>☰</button>
         <div className="brandBlock">
-          <p>UNIVERSAL DRAGON • BIGBANG ENGINE</p>
+          <p>UNIVERSAL DRAGON • SINGULARITY ENGINE</p>
           <h1>{title}</h1>
           <span>UD Singularity • Aslam • Expandable Universe</span>
         </div>
@@ -218,6 +255,23 @@ ${html}
           <button className="hot" onClick={architect}>EVE Architect</button>
         </div>
       </header>
+
+      <section className="aiPanel">
+        <div>
+          <h2>🧠 EVE Code Creator</h2>
+          <p>Ask EVE to create, fix, or upgrade HTML/CSS/JS. Example: “create a fire dragon landing page with animated portal”.</p>
+        </div>
+        <textarea
+          value={aiQuestion}
+          onChange={(e) => setAiQuestion(e.target.value)}
+          placeholder="Ask EVE to create code..."
+        />
+        <div className="aiActions">
+          <button className="hot" onClick={architect}>Generate / Review</button>
+          <button onClick={applyAiCode}>Apply AI Code</button>
+        </div>
+        {aiReply && <pre className="aiReply">{aiReply}</pre>}
+      </section>
 
       <section className="studioGrid">
         {sideOpen && (
