@@ -1,8 +1,8 @@
 # UD Singularity
 
-**BigBang engine for the Universal Dragon expandable AI universe and multiverse system by Aslam.**
+**Singularity engine for the Universal Dragon expandable AI universe and multiverse system by Aslam.**
 
-One point. One core. One BigBang. Expanding into projects, worlds, modules, EVE/NOVA intelligence, UDOS, hardware, robotics, and future multiverse systems.
+One point. One core. One spark. Expanding into projects, worlds, modules, EVE/NOVA intelligence, UDOS, hardware, robotics, and future multiverse systems.
 
 Creator: Aslam  
 Project Identity: Universal Dragon  
@@ -15,12 +15,12 @@ UD Singularity is the starting point of the Universal Dragon expandable universe
 
 ```text
 Singularity = one small point
-BigBang Core = first creation engine
+Core Spark = first creation engine
 Universe = projects and modules expanding
 Multiverse = many worlds, apps, systems, labs, and devices later
 ```
 
-## First Mission — BigBang v0.1
+## First Mission — Singularity v0.1
 
 Build the first public creation engine:
 
@@ -53,4 +53,4 @@ const UD_MODULES = {
 
 ## Keywords
 
-Universal Dragon, Universal Dragon Aslam, Aslam, UD Singularity, BigBang Engine, EVE, NOVA, UDOS, expandable AI universe, multiverse system, AI code studio, robotics, Raspberry Pi, automation, system design.
+Universal Dragon, Universal Dragon Aslam, Aslam, UD Singularity, Singularity Engine, EVE, NOVA, UDOS, expandable AI universe, multiverse system, AI code studio, robotics, Raspberry Pi, automation, system design.

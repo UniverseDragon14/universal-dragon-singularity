@@ -2,7 +2,7 @@
   "name": "universal-dragon-singularity",
   "version": "0.1.0",
   "private": false,
-  "description": "UD Singularity BigBang engine for the Universal Dragon expandable AI universe.",
+  "description": "UD Singularity engine for the Universal Dragon expandable AI universe.",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,12 +12,12 @@
   },
   "dependencies": {
     "@monaco-editor/react": "latest",
-    "vite": "latest",
+    "cors": "latest",
+    "dotenv": "latest",
+    "express": "latest",
+    "groq-sdk": "^1.2.0",
     "react": "latest",
     "react-dom": "latest",
-    "express": "latest",
-    "cors": "latest",
-    "dotenv": "latest"
-  },
-  "devDependencies": {}
+    "vite": "latest"
+  }
 }
