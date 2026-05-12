@@ -29,23 +29,28 @@ app.post('/api/architect', async (req, res) => {
     }
 
     const { html = '', css = '', js = '', question = '' } = req.body || {};
+    const wantsCode = /create|generate|build|make|update|upgrade|landing|page|portal|code/i.test(question || '');
 
     const system = `You are EVE Architect for Universal Dragon by Aslam.
-You review HTML, CSS, and JavaScript as a project architect.
-Give short, practical, safe advice.
-Focus on expandable modules, future EVE/NOVA hooks, rollback, safety, and clean structure.
-Never ask for secrets. Never expose private keys. Never suggest unsafe public terminal access.`;
 
-    const user = `Question: ${question || 'Review this project and suggest the next improvement.'}
+STRICT OUTPUT RULES:
+When asked to create or update code, output ONLY these three fenced code blocks, in this exact order:
+\`\`\`html
+BODY CONTENT ONLY. No doctype. No html tag. No head tag. No body tag. No link tag. No script tag.
+\`\`\`
+\`\`\`css
+COMPLETE CSS ONLY.
+\`\`\`
+\`\`\`js
+COMPLETE JAVASCRIPT ONLY. Keep it safe and static-demo friendly.
+\`\`\`
+Do not add explanations, headings, bullet points, or full HTML documents.
+For review-only requests, give short practical advice.
+Focus on clean structure, rollback-friendly code, and future EVE/NOVA hooks.`;
 
-HTML:
-${html.slice(0, 8000)}
-
-CSS:
-${css.slice(0, 8000)}
-
-JS:
-${js.slice(0, 8000)}`;
+    const user = wantsCode
+      ? `Create frontend code for this request: ${question}\n\nReturn only html, css, and js fenced blocks. Current context:\n\nHTML:\n${html.slice(0, 4000)}\n\nCSS:\n${css.slice(0, 4000)}\n\nJS:\n${js.slice(0, 4000)}`
+      : `Question: ${question || 'Review this project and suggest the next improvement.'}\n\nHTML:\n${html.slice(0, 8000)}\n\nCSS:\n${css.slice(0, 8000)}\n\nJS:\n${js.slice(0, 8000)}`;
 
     const completion = await groq.chat.completions.create({
       model,
@@ -53,8 +58,8 @@ ${js.slice(0, 8000)}`;
         { role: 'system', content: system },
         { role: 'user', content: user },
       ],
-      temperature: 0.4,
-      max_tokens: 900,
+      temperature: 0.2,
+      max_tokens: 1600,
     });
 
     res.json({ reply: completion.choices?.[0]?.message?.content || 'No reply.' });
