@@ -130,6 +130,7 @@ function App() {
   const [sideOpen, setSideOpen] = useState(true);
   const [aiQuestion, setAiQuestion] = useState('');
   const [aiReply, setAiReply] = useState('');
+  const [activePanel, setActivePanel] = useState('creator');
 
   useEffect(() => {
     const handler = (event) => {
@@ -216,6 +217,7 @@ ${js}
     setJs(template.js);
     setConsoleLines([`${template.name} loaded.`]);
     setStatus(`${template.name} template loaded.`);
+    setActivePanel('preview');
   };
 
   const architect = async () => {
@@ -236,6 +238,7 @@ ${js}
       setAiReply(reply);
       setConsoleLines((lines) => [...lines.slice(-6), `EVE: ${reply.slice(0, 700)}`]);
       setStatus('EVE Architect replied.');
+      setActivePanel('creator');
     } catch {
       setStatus('EVE Architect backend not running yet. Frontend is safe and working.');
     }
@@ -267,6 +270,7 @@ ${js}
 
     setConsoleLines((lines) => [...lines.slice(-6), 'EVE code applied safely to editor.']);
     setStatus('EVE generated code applied.');
+    setActivePanel('preview');
   };
 
   const currentValue = active === 'html' ? html : active === 'css' ? css : js;
@@ -275,6 +279,13 @@ ${js}
     if (active === 'css') setCss(value || '');
     if (active === 'js') setJs(value || '');
   };
+
+  const panelButtons = [
+    { id: 'creator', label: '🧠 Create' },
+    { id: 'files', label: '📁 Files' },
+    { id: 'editor', label: '⌨️ Code' },
+    { id: 'preview', label: '👁️ Preview' },
+  ];
 
   return (
     <main className="appShell">
@@ -293,7 +304,19 @@ ${js}
         </div>
       </header>
 
-      <section className="aiPanel">
+      <nav className="panelNav" aria-label="UD Studio sections">
+        {panelButtons.map((panel) => (
+          <button
+            key={panel.id}
+            className={activePanel === panel.id ? 'active' : ''}
+            onClick={() => setActivePanel(panel.id)}
+          >
+            {panel.label}
+          </button>
+        ))}
+      </nav>
+
+      <section className={`aiPanel studioPane ${activePanel === 'creator' ? 'active' : ''}`}>
         <div>
           <h2>🧠 EVE Code Creator</h2>
           <p>Ask EVE to create, fix, or upgrade HTML/CSS/JS. Example: “create a fire dragon landing page with animated portal”.</p>
@@ -312,12 +335,12 @@ ${js}
 
       <section className="studioGrid">
         {sideOpen && (
-          <aside className="sidePanel">
+          <aside className={`sidePanel studioPane ${activePanel === 'files' ? 'active' : ''}`}>
             <h2>Files</h2>
             <input className="search" placeholder="Search files..." />
             <div className="fileList">
               {files.map((file) => (
-                <button key={file.id} className={active === file.id ? 'file active' : 'file'} onClick={() => setActive(file.id)}>
+                <button key={file.id} className={active === file.id ? 'file active' : 'file'} onClick={() => { setActive(file.id); setActivePanel('editor'); }}>
                   <span>{file.icon}</span>{file.name}
                 </button>
               ))}
@@ -341,7 +364,7 @@ ${js}
         )}
 
         <section className="mainStudio">
-          <div className="editorPanel">
+          <div className={`editorPanel studioPane ${activePanel === 'editor' ? 'active' : ''}`}>
             <div className="tabs">
               {files.map((file) => (
                 <button key={file.id} className={active === file.id ? 'active' : ''} onClick={() => setActive(file.id)}>{file.name}</button>
@@ -357,7 +380,7 @@ ${js}
             />
           </div>
 
-          <div className="previewPanel">
+          <div className={`previewPanel studioPane ${activePanel === 'preview' ? 'active' : ''}`}>
             <div className="previewHead">
               <span>Preview: /</span>
               <button onClick={() => setConsoleLines(['Preview console cleared.'])}>Clear Console</button>
