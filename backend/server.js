@@ -8,49 +8,85 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 8787;
 const model = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
-
-app.use(cors({ origin: true }));
-app.use(express.json({ limit: '1mb' }));
+const privatePin = process.env.UD_API_PIN || '';
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'https://universedragon14.github.io,http://localhost:5173,http://127.0.0.1:5173')
+  .split(',')
+  .map((item) => item.trim())
+  .filter(Boolean);
 
 const groq = process.env.GROQ_API_KEY
   ? new Groq({ apiKey: process.env.GROQ_API_KEY })
   : null;
 
+app.disable('x-powered-by');
+app.use(express.json({ limit: '512kb' }));
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('Origin not allowed'));
+  },
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'X-UD-PIN'],
+}));
+
+const recent = new Map();
+function limitRequests(req, res, next) {
+  const ip = req.ip || 'unknown';
+  const now = Date.now();
+  const current = recent.get(ip) || { count: 0, reset: now + 60000 };
+  if (now > current.reset) {
+    current.count = 0;
+    current.reset = now + 60000;
+  }
+  current.count += 1;
+  recent.set(ip, current);
+  if (current.count > Number(process.env.RATE_LIMIT_PER_MINUTE || 20)) {
+    return res.status(429).json({ ok: false, error: 'Too many requests. Try again later.' });
+  }
+  return next();
+}
+
+function requirePin(req, res, next) {
+  if (!privatePin) {
+    return res.status(500).json({ ok: false, error: 'Private backend PIN is not configured.' });
+  }
+  if (req.get('X-UD-PIN') !== privatePin) {
+    return res.status(401).json({ ok: false, error: 'Private PIN required.' });
+  }
+  return next();
+}
+
 app.get('/api/health', (req, res) => {
-  res.json({ ok: true, service: 'UD Singularity EVE Architect Bridge', model });
+  res.json({
+    ok: true,
+    service: 'UD Singularity Private Backend Bridge',
+    model,
+    key_loaded: Boolean(groq),
+    pin_required: true,
+  });
 });
 
-app.post('/api/architect', async (req, res) => {
+app.post('/api/architect', limitRequests, requirePin, async (req, res) => {
   try {
     if (!groq) {
-      return res.status(500).json({
-        error: 'GROQ_API_KEY is missing. Add it to your private .env file, not GitHub.',
-      });
+      return res.status(500).json({ ok: false, error: 'AI provider key missing on private server.' });
     }
 
     const { html = '', css = '', js = '', question = '' } = req.body || {};
-    const wantsCode = /create|generate|build|make|update|upgrade|landing|page|portal|code/i.test(question || '');
+    const cleanQuestion = String(question).slice(0, 2500).trim();
+    if (!cleanQuestion) return res.status(400).json({ ok: false, error: 'Question is required.' });
+
+    const wantsCode = /create|generate|build|make|update|upgrade|landing|page|portal|code/i.test(cleanQuestion);
 
     const system = `You are EVE Architect for Universal Dragon by Aslam.
-
-STRICT OUTPUT RULES:
-When asked to create or update code, output ONLY these three fenced code blocks, in this exact order:
-\`\`\`html
-BODY CONTENT ONLY. No doctype. No html tag. No head tag. No body tag. No link tag. No script tag.
-\`\`\`
-\`\`\`css
-COMPLETE CSS ONLY.
-\`\`\`
-\`\`\`js
-COMPLETE JAVASCRIPT ONLY. Keep it safe and static-demo friendly.
-\`\`\`
-Do not add explanations, headings, bullet points, or full HTML documents.
+When asked to create or update code, output only three fenced blocks in this order: html, css, js.
+HTML must be body content only. CSS must be complete CSS. JS must be complete safe browser JavaScript.
 For review-only requests, give short practical advice.
-Focus on clean structure, rollback-friendly code, and future EVE/NOVA hooks.`;
+Focus on clean structure, rollback-friendly code, approval before risky actions, and future EVE/NOVA hooks.`;
 
     const user = wantsCode
-      ? `Create frontend code for this request: ${question}\n\nReturn only html, css, and js fenced blocks. Current context:\n\nHTML:\n${html.slice(0, 4000)}\n\nCSS:\n${css.slice(0, 4000)}\n\nJS:\n${js.slice(0, 4000)}`
-      : `Question: ${question || 'Review this project and suggest the next improvement.'}\n\nHTML:\n${html.slice(0, 8000)}\n\nCSS:\n${css.slice(0, 8000)}\n\nJS:\n${js.slice(0, 8000)}`;
+      ? `Create frontend code for this request: ${cleanQuestion}\n\nCurrent HTML:\n${String(html).slice(0, 4000)}\n\nCurrent CSS:\n${String(css).slice(0, 4000)}\n\nCurrent JS:\n${String(js).slice(0, 4000)}`
+      : `Question: ${cleanQuestion}\n\nHTML:\n${String(html).slice(0, 8000)}\n\nCSS:\n${String(css).slice(0, 8000)}\n\nJS:\n${String(js).slice(0, 8000)}`;
 
     const completion = await groq.chat.completions.create({
       model,
@@ -62,12 +98,12 @@ Focus on clean structure, rollback-friendly code, and future EVE/NOVA hooks.`;
       max_tokens: 1600,
     });
 
-    res.json({ reply: completion.choices?.[0]?.message?.content || 'No reply.' });
+    return res.json({ ok: true, reply: completion.choices?.[0]?.message?.content || 'No reply.' });
   } catch (error) {
-    res.status(500).json({ error: error.message || 'EVE Architect bridge failed.' });
+    return res.status(500).json({ ok: false, error: error.message || 'Backend bridge failed.' });
   }
 });
 
-app.listen(port, () => {
-  console.log(`UD Singularity EVE Architect Bridge running on http://localhost:${port}`);
+app.listen(port, '0.0.0.0', () => {
+  console.log(`UD Singularity Private Backend Bridge running on http://0.0.0.0:${port}`);
 });
