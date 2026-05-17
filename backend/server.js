@@ -104,6 +104,81 @@ Focus on clean structure, rollback-friendly code, approval before risky actions,
   }
 });
 
+
+function stripDangerousGeneratedCode(value) {
+  return String(value || '')
+    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '')
+    .replace(/\bon\w+\s*=/gi, 'data-blocked-event=')
+    .replace(/localStorage|sessionStorage|document\.cookie|navigator\.sendBeacon/gi, 'blockedStorage')
+    .replace(/fetch\s*\(|XMLHttpRequest|WebSocket|import\s*\(/gi, 'blockedNetwork(')
+    .slice(0, 50000);
+}
+
+function parseForgeJson(text) {
+  const raw = String(text || '').trim();
+  const cleaned = raw
+    .replace(/^```json/i, '')
+    .replace(/^```/i, '')
+    .replace(/```$/i, '')
+    .trim();
+
+  const match = cleaned.match(/\{[\s\S]*\}/);
+  return JSON.parse(match ? match[0] : cleaned);
+}
+
+app.post('/api/forge-generate', limitRequests, requirePin, async (req, res) => {
+  try {
+    if (!groq) {
+      return res.status(500).json({ ok: false, error: 'AI provider key missing on private server.' });
+    }
+
+    const prompt = String(req.body?.prompt || '').slice(0, 1200).trim();
+
+    if (!prompt) {
+      return res.status(400).json({ ok: false, error: 'Prompt required' });
+    }
+
+    const system = `You are UD Studio Forge AI.
+Create a clean mobile-friendly static web app.
+Return ONLY valid JSON:
+{
+  "html": "...",
+  "css": "...",
+  "js": "..."
+}
+Rules:
+- No markdown.
+- No explanation.
+- No external network calls.
+- No cookies, localStorage, sessionStorage, tokens, passwords, or private IPs.
+- JavaScript must be browser-safe and demo-only.
+- Do not create destructive, tracking, malware, phishing, or bypass logic.`;
+
+    const out = await groq.chat.completions.create({
+      model,
+      temperature: 0.25,
+      max_tokens: 2200,
+      messages: [
+        { role: 'system', content: system },
+        { role: 'user', content: prompt }
+      ]
+    });
+
+    const text = out.choices?.[0]?.message?.content || '';
+    const data = parseForgeJson(text);
+
+    return res.json({
+      ok: true,
+      html: stripDangerousGeneratedCode(data.html),
+      css: String(data.css || '').slice(0, 50000),
+      js: stripDangerousGeneratedCode(data.js)
+    });
+  } catch (error) {
+    return res.status(500).json({ ok: false, error: error.message || 'Forge generate failed.' });
+  }
+});
+
+
 app.listen(port, '0.0.0.0', () => {
   console.log(`UD Singularity Private Backend Bridge running on http://0.0.0.0:${port}`);
 });
