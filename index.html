@@ -1,66 +1,433 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="UD Singularity — BigBang engine for the Universal Dragon expandable AI universe and multiverse system by Aslam." />
-  <meta name="keywords" content="Universal Dragon, Aslam, NOVA, EVE, UD Singularity, BigBang Engine, UDOS, AI, robotics" />
-  <meta name="author" content="Aslam" />
-  <title>UD Singularity | Universal Dragon Aslam</title>
+
+  <title>UD Singularity v0.2 | Universal Dragon Aslam</title>
+  <meta name="description" content="Universal Dragon Singularity by Aslam — safe public BigBang engine for NOVA, EVE, UDOS, rollback, memory, worlds, and future robotics." />
+
   <style>
-    :root{--bg:#050506;--panel:rgba(0,0,0,.72);--cyan:#05d9ff;--fire:#ff7a18;--gold:#ffd166;--green:#39ff88;--text:#eafcff;--muted:#9db3b8;}
-    *{box-sizing:border-box}
-    body{margin:0;min-height:100vh;color:var(--text);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:radial-gradient(circle at 20% 10%,rgba(255,122,24,.25),transparent 28%),radial-gradient(circle at 80% 0%,rgba(5,217,255,.2),transparent 32%),linear-gradient(135deg,#020303,#071113 55%,#090604)}
-    body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(5,217,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(5,217,255,.06) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(circle,black,transparent 78%)}
-    .wrap{width:min(1080px,calc(100% - 30px));margin:auto;padding:28px 0 55px;position:relative}
-    .top{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:26px}
-    .brand{display:flex;gap:14px;align-items:center}
-    .logo{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(5,217,255,.45);box-shadow:0 0 24px rgba(5,217,255,.35);color:var(--gold)}
-    h2{margin:0;color:var(--green);letter-spacing:.18em;font-size:clamp(20px,4vw,34px);text-shadow:0 0 16px rgba(57,255,136,.45)}
-    .sub{margin:6px 0 0;color:var(--muted);letter-spacing:.14em;font-size:12px}
-    .pill{border:1px solid rgba(255,122,24,.55);border-radius:999px;padding:10px 14px;color:var(--gold);background:rgba(0,0,0,.45)}
-    .hero{display:grid;grid-template-columns:1.08fr .92fr;gap:20px}
-    .card{border:1px solid rgba(5,217,255,.38);border-radius:28px;background:linear-gradient(145deg,rgba(0,0,0,.76),rgba(5,25,25,.7));box-shadow:0 0 35px rgba(5,217,255,.15),inset 0 0 45px rgba(255,122,24,.04);backdrop-filter:blur(14px)}
-    .main{padding:clamp(25px,6vw,56px)}
-    .tag{margin:0 0 18px;color:var(--gold);letter-spacing:.34em;font-size:12px}
-    h1{margin:0;font-size:clamp(42px,10vw,96px);line-height:.92;letter-spacing:-.08em;color:#fff8ed;text-shadow:0 0 35px rgba(255,122,24,.38)}
-    .lead{margin:24px 0 0;color:#cce9ee;font-size:clamp(16px,2.5vw,21px);line-height:1.7}
-    .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
-    button,.btn{border:1px solid rgba(5,217,255,.38);border-radius:999px;background:rgba(0,0,0,.45);color:var(--text);padding:13px 18px;font:inherit;text-decoration:none}
-    .primary{background:linear-gradient(90deg,var(--fire),var(--gold));color:#1b0800;border:0;font-weight:800}
-    .core{min-height:390px;display:grid;place-items:center;overflow:hidden}
-    .orb{width:min(68vw,320px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#fff6d1 0 3%,#ffbf45 4% 8%,#ff6900 9% 16%,rgba(255,105,0,.2) 17% 32%,transparent 33%),conic-gradient(transparent,rgba(5,217,255,.9),transparent,rgba(255,122,24,.9),transparent);filter:drop-shadow(0 0 30px rgba(255,122,24,.55));animation:spin 10s linear infinite;position:relative}
-    .orb:after{content:"BIGBANG";position:absolute;inset:38%;display:grid;place-items:center;color:var(--green);font-size:13px;letter-spacing:.18em;animation:rev 10s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}@keyframes rev{to{transform:rotate(-360deg)}}
-    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
-    .module{padding:18px;min-height:150px}
-    .module b{display:block;color:var(--green);margin-bottom:12px;letter-spacing:.12em}
-    .module p{margin:0;color:var(--muted);line-height:1.6;font-size:14px}
-    .console{margin-top:20px;padding:22px;color:var(--green);min-height:150px;white-space:pre-wrap;line-height:1.65}
-    .foot{text-align:center;color:var(--muted);font-size:13px;margin-top:26px;line-height:1.7}
-    @media(max-width:820px){.top{align-items:flex-start;flex-direction:column}.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}.core{min-height:300px}}
-    @media(max-width:520px){.grid{grid-template-columns:1fr}.actions{flex-direction:column}.actions>*{width:100%;text-align:center}}
+    :root {
+      --bg: #05040a;
+      --panel: rgba(255, 255, 255, 0.07);
+      --panel2: rgba(255, 87, 34, 0.12);
+      --text: #fff7ef;
+      --muted: #b9a99f;
+      --fire: #ff5a1f;
+      --gold: #ffc857;
+      --red: #ff2f2f;
+      --line: rgba(255, 255, 255, 0.14);
+      --green: #42ff9e;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% 15%, rgba(255, 90, 31, 0.28), transparent 32%),
+        radial-gradient(circle at 80% 20%, rgba(255, 200, 87, 0.18), transparent 30%),
+        radial-gradient(circle at 50% 95%, rgba(255, 47, 47, 0.18), transparent 38%),
+        var(--bg);
+      overflow-x: hidden;
+    }
+
+    .wrap {
+      width: min(1120px, 94%);
+      margin: auto;
+      padding: 34px 0;
+    }
+
+    .hero {
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 30px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03));
+      box-shadow: 0 0 60px rgba(255, 90, 31, 0.14);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: -80px;
+      background: conic-gradient(from 0deg, transparent, rgba(255, 90, 31, 0.22), transparent, rgba(255, 200, 87, 0.16), transparent);
+      animation: spin 14s linear infinite;
+      z-index: 0;
+    }
+
+    .hero > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .badge {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--gold);
+      background: rgba(0,0,0,0.28);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 18px 0 8px;
+      font-size: clamp(42px, 8vw, 92px);
+      line-height: 0.9;
+      letter-spacing: -0.06em;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      color: var(--gold);
+      font-size: clamp(24px, 4vw, 44px);
+    }
+
+    p {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: rgba(255,255,255,0.08);
+      padding: 11px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 200, 87, 0.55);
+      box-shadow: 0 0 20px rgba(255, 90, 31, 0.22);
+    }
+
+    .primary {
+      background: linear-gradient(135deg, var(--fire), var(--red));
+      border-color: transparent;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      background: var(--panel);
+      min-height: 150px;
+    }
+
+    .card strong {
+      color: var(--gold);
+      display: block;
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+
+    .console {
+      margin-top: 18px;
+      border: 1px solid rgba(255, 200, 87, 0.25);
+      border-radius: 22px;
+      overflow: hidden;
+      background: rgba(0,0,0,0.55);
+    }
+
+    .console-head {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--gold);
+      font-weight: 800;
+    }
+
+    #output {
+      min-height: 210px;
+      max-height: 330px;
+      overflow: auto;
+      padding: 14px;
+      font-family: "Courier New", monospace;
+      font-size: 13px;
+      color: #ffe8c2;
+      white-space: pre-wrap;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      padding: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    input {
+      flex: 1;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--line);
+      color: white;
+      padding: 12px;
+      border-radius: 14px;
+      outline: none;
+    }
+
+    .status {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .pill {
+      padding: 14px;
+      border-radius: 18px;
+      background: var(--panel2);
+      border: 1px solid rgba(255, 90, 31, 0.25);
+    }
+
+    .ok {
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    footer {
+      margin-top: 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 850px) {
+      .grid, .status {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 22px;
+      }
+
+      .input-row {
+        flex-direction: column;
+      }
+    }
   </style>
 </head>
+
 <body>
   <main class="wrap">
-    <header class="top">
-      <div class="brand"><span class="logo">⚡</span><div><h2>UNIVERSAL DRAGON</h2><p class="sub">NOVA • EVE • UDOS • SINGULARITY</p></div></div>
-      <span class="pill">Aslam · Safe Public Core</span>
-    </header>
     <section class="hero">
-      <div class="card main"><p class="tag">UD Singularity v0.1</p><h1>BigBang Engine</h1><p class="lead">One point expanding into the Universal Dragon AI universe — a safe modular system for NOVA, EVE, memory, virtual worlds, rollback, and future robotics.</p><div class="actions"><button class="primary" onclick="ignite()">🔥 Ignite Singularity</button><button onclick="moduleSlot()">🧩 Create Module</button><button onclick="rollback()">↻ Rollback Check</button><button onclick="copyVision()">📋 Copy Vision</button></div></div>
-      <div class="card core"><div class="orb"></div></div>
-    </section>
-    <section class="grid"><article class="card module"><b>01 · NOVA</b><p>Public brain layer for project identity, questions, and clean communication.</p></article><article class="card module"><b>02 · EVE</b><p>Private shoulder layer for Aslam: memory, commands, approval, safety, and rollback.</p></article><article class="card module"><b>03 · WORLD</b><p>Expandable virtual world and 3D experiments without exposing private backend secrets.</p></article><article class="card module"><b>04 · GUARD</b><p>Safety first: no public API keys, no private IPs, no risky automation without approval.</p></article></section>
-    <section id="console" class="card console">UD Singularity console ready.
-Type: ignite → remember → plan → approve → build → test → rollback.
+      <div class="badge">⚡ Universal Dragon · Safe Public Core · v0.2</div>
 
-Status: GitHub Pages static mode active.</section>
-    <p class="foot">Universal Dragon Singularity by Aslam · Public frontend only · Backend/API keys stay private.</p>
+      <h1>UD Singularity</h1>
+      <h2>BigBang Engine</h2>
+
+      <p>
+        One point expanding into the Universal Dragon AI universe — a safe modular system for
+        NOVA, EVE, memory, virtual worlds, rollback, approval, and future robotics.
+      </p>
+
+      <div class="actions">
+        <button class="primary" onclick="runCommand('ignite')">Ignite Singularity</button>
+        <button onclick="runCommand('remember')">Remember</button>
+        <button onclick="runCommand('plan')">Plan</button>
+        <button onclick="runCommand('approve')">Approval Check</button>
+        <button onclick="runCommand('build')">Build</button>
+        <button onclick="runCommand('rollback')">Rollback Check</button>
+        <button onclick="runCommand('vision')">Copy Vision</button>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <strong>01 · NOVA</strong>
+          Public brain layer for project identity, clean communication, and safe explanation.
+        </div>
+
+        <div class="card">
+          <strong>02 · EVE</strong>
+          Private shoulder layer for Aslam: memory, commands, approval, safety, and rollback.
+        </div>
+
+        <div class="card">
+          <strong>03 · WORLD</strong>
+          Expandable virtual world and 3D experiments without exposing private backend secrets.
+        </div>
+
+        <div class="card">
+          <strong>04 · GUARD</strong>
+          Safety first: no public API keys, no private IPs, no risky automation without approval.
+        </div>
+      </div>
+
+      <div class="status">
+        <div class="pill">Frontend: <span class="ok">GitHub Pages static</span></div>
+        <div class="pill">Backend secrets: <span class="ok">Not exposed</span></div>
+        <div class="pill">Rollback: <span class="ok">Manual safe copy</span></div>
+      </div>
+
+      <div class="console">
+        <div class="console-head">
+          <span>UD Singularity Console</span>
+          <span>Type: ignite → remember → plan → approve → build → test → rollback</span>
+        </div>
+
+        <div id="output"></div>
+
+        <div class="input-row">
+          <input id="cmd" placeholder="Type command: ignite / remember / plan / approve / build / rollback / vision" />
+          <button class="primary" onclick="submitCommand()">Run</button>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      Universal Dragon Singularity by Aslam · Public frontend only · Backend/API keys stay private.
+    </footer>
   </main>
+
   <script>
-    const box=document.getElementById('console');const time=()=>new Date().toLocaleTimeString();function log(t){box.textContent+=`\n[${time()}] ${t}`;box.scrollIntoView({behavior:'smooth',block:'nearest'});}function ignite(){log('🔥 Singularity ignition complete. NOVA, EVE, WORLD, GUARD online.')}function moduleSlot(){log('🧩 Module slot created. Next: plan + approval before real feature.')}function rollback(){log('↻ Rollback checkpoint ready. Backup before risky change.')}async function copyVision(){const t='Universal Dragon Singularity: BigBang engine for NOVA, EVE, memory, worlds, rollback, and safe future robotics. Created by Aslam.';try{await navigator.clipboard.writeText(t);log('📋 Vision copied.')}catch(e){log('📋 Copy blocked. '+t)}}
+    const output = document.getElementById("output");
+    const input = document.getElementById("cmd");
+
+    const state = {
+      version: "0.2",
+      mode: "static-public",
+      privateBackend: false,
+      approvalRequired: true,
+      safeCore: true
+    };
+
+    function log(text) {
+      const time = new Date().toLocaleTimeString();
+      output.textContent += `[${time}] ${text}\n`;
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function rememberLocal(key, value) {
+      localStorage.setItem(`ud_${key}`, value);
+    }
+
+    function readLocal(key) {
+      return localStorage.getItem(`ud_${key}`);
+    }
+
+    function runCommand(raw) {
+      const cmd = String(raw || "").trim().toLowerCase();
+
+      if (!cmd) {
+        log("No command entered.");
+        return;
+      }
+
+      if (cmd === "ignite") {
+        rememberLocal("last_command", "ignite");
+        log("🔥 Singularity ignition complete. BigBang Engine v0.2 active.");
+        log("Modules online: NOVA / EVE / WORLD / GUARD.");
+        return;
+      }
+
+      if (cmd === "remember") {
+        rememberLocal("vision", "Universal Dragon: brain first, robot later, safe approval-based EVE.");
+        log("🧠 Local public memory saved in browser only.");
+        log("Memory: " + readLocal("vision"));
+        return;
+      }
+
+      if (cmd === "plan") {
+        log("📍 Plan v0.2:");
+        log("1. Keep public page clean.");
+        log("2. Add static command console.");
+        log("3. Keep private EVE backend separate.");
+        log("4. Build next: module map + timeline + safe demo screen.");
+        return;
+      }
+
+      if (cmd === "approve") {
+        log("✅ Approval rule active.");
+        log("Public page can show ideas only. Any real file/server/device action must ask Aslam first.");
+        return;
+      }
+
+      if (cmd === "build") {
+        log("🛠 Build target prepared:");
+        log("Next version v0.3 = Module Map + EVE flow diagram + safer project roadmap.");
+        return;
+      }
+
+      if (cmd === "test") {
+        log("🧪 Static test OK:");
+        log("- No API key");
+        log("- No private IP");
+        log("- No backend control");
+        log("- Browser localStorage only");
+        return;
+      }
+
+      if (cmd === "rollback") {
+        log("↩ Rollback check:");
+        log("Use backups/index_before_v02_*.html if this version needs revert.");
+        return;
+      }
+
+      if (cmd === "vision") {
+        navigator.clipboard?.writeText(
+          "Universal Dragon Singularity: a safe public BigBang Engine for NOVA, EVE, UDOS, worlds, rollback, memory, approval, and future robotics."
+        );
+        log("📋 Vision copied if clipboard permission is allowed.");
+        return;
+      }
+
+      log("Unknown command: " + cmd);
+      log("Allowed: ignite, remember, plan, approve, build, test, rollback, vision");
+    }
+
+    function submitCommand() {
+      runCommand(input.value);
+      input.value = "";
+      input.focus();
+    }
+
+    input.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") submitCommand();
+    });
+
+    window.addEventListener("error", function(event) {
+      log("⚠ Error captured safely: " + event.message);
+    });
+
+    log("UD Singularity console ready.");
+    log("Status: GitHub Pages static mode active.");
+    log("Try: ignite");
   </script>
 </body>
 </html>
